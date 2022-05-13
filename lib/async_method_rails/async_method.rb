@@ -23,8 +23,8 @@ module AsyncMethodRails
             raise NotPersistedError, 'Instance must be persisted to run asynchronously' unless persisted?
             raise TypeError, 'Cannot pass a block to an asynchronous method' if block_given?
 
-            active_job_arguments.job.set(active_job_arguments.to_h).perform_later(self, method_name)
-        end
+            active_job_arguments.job.set(**active_job_arguments.to_h).perform_later(self, method_name)
+          end
         else
           stringified_method_body = begin
             <<~RUBY

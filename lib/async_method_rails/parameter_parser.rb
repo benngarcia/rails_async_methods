@@ -27,10 +27,14 @@ module AsyncMethodRails
       final_arg_values = [[], {}]
       @parameters.each do |type, name|
         case type
-        when :req, :opt, :rest
+        when :req, :opt
           final_arg_values[0].append(block.call(name))
-        when :keyreq, :key, :keyrest
+        when :rest
+          final_arg_values[0].append(*block.call(name))
+        when :keyreq, :key
           final_arg_values[1].merge!(name => block.call(name))
+        when :keyrest
+          final_arg_values[1].merge!(block.call(name))
         end
       end
       final_arg_values

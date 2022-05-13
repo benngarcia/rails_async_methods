@@ -22,4 +22,29 @@ class AsyncExample < ApplicationRecord
     end
   end
   async :method_with_args_spread_args_and_kwargs
+
+  def method_with_diff_queue
+    nil
+  end
+  async :method_with_diff_queue, queue: :fast
+
+  def method_with_diff_wait_time_and_priority
+    nil
+  end
+  async :method_with_diff_wait_time_and_priority, wait: 1.week, priority: -10
+
+  def method_with_diff_prefix
+    nil
+  end
+  async :method_with_diff_prefix, prefix: :auto_async_
+
+  def method_with_custom_job
+    nil
+  end
+  async :method_with_custom_job, job: ExampleCustomAsyncJob
+
+  def method_with_custom_job_and_args
+    nil
+  end
+  async :method_with_custom_job_and_args, job: :ExampleCustomAsyncJob, queue: :custom
 end

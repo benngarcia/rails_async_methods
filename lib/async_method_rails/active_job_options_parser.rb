@@ -27,7 +27,7 @@ module AsyncMethodRails
     private
 
     def valid_instance_values
-      Hash[SET_OPTIONS.filter_map { |name| [name.to_s, send(name)] unless send(name).nil? }]
+      Hash[SET_OPTIONS.filter_map { |name| [name, send(name)] unless send(name).nil? }]
     end
 
     def method_prefix(prefix)
@@ -37,7 +37,7 @@ module AsyncMethodRails
     end
 
     def get_job_obj(job)
-      return AsyncMethodRails::AbstractJob if job.nil? || job.empty?
+      return AsyncMethodRails::AbstractJob if job.nil?
 
       (job.is_a? Symbol) ? Object.const_get(job) : job
     end
