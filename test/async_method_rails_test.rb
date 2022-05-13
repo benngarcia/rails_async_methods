@@ -74,4 +74,12 @@ class AsyncMethodRailsTest < ActiveSupport::TestCase
     dj = ex.async_method_with_custom_job
     assert_equal(dj.class, ExampleCustomAsyncJob) # assert_instance_of not working
   end
+
+  test "correctly passes arguments to a custom job" do
+    ex = AsyncExample.create!
+
+    dj = ex.async_method_with_custom_job_and_args
+    assert_equal dj.class, ExampleCustomAsyncJob
+    assert_equal dj.queue_name, "custom"
+  end
 end
