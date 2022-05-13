@@ -1,5 +1,4 @@
 require "test_helper"
-require 'pry'
 class RailsAsyncMethodsTest < ActiveSupport::TestCase
   include DelayedJobRunner
 
