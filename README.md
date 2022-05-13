@@ -1,5 +1,5 @@
 # RailsAsyncMethods
-Rails Async Methods is an opinionated gem meant to remove boilerplate while creating asynchronous rails jobs. It provides a declaritive interface for converting any model method into an asychronous method by provided an abstracted wrapper around rails ActiveJob API.
+Rails Async Methods is an opinionated gem meant to remove boilerplate while creating asynchronous rails jobs. It provides a declarative interface for converting any model method into an asychronous method by provided an abstracted wrapper around rails ActiveJob API.
 
 ## Usage
 ```ruby
