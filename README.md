@@ -7,8 +7,8 @@ class User
   def example_method
     # logic...
   end
+  async :example_method
 end
-async :example_method
 ```
 This will give you access to ```user_instance.async_example_method```, which when called will use ActiveJob's API to create an ActiveJob with your backend of choice and call the example_method when the job is ran.
 
