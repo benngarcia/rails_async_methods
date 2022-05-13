@@ -1,4 +1,4 @@
-module AsyncMethodRails
+module RailsAsyncMethods
   class ActiveJobOptionsParser
     SET_OPTIONS = %i[queue wait_until wait priority].freeze
 
@@ -37,7 +37,7 @@ module AsyncMethodRails
     end
 
     def get_job_obj(job)
-      return AsyncMethodRails::AbstractJob if job.nil?
+      return RailsAsyncMethods::AbstractJob if job.nil?
 
       (job.is_a? Symbol) ? Object.const_get(job) : job
     end

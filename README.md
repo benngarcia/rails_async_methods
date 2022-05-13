@@ -1,4 +1,4 @@
-# AsyncMethodRails
+# RailsAsyncMethods
 Short description and motivation.
 
 ## Usage
@@ -8,7 +8,7 @@ How to use my plugin.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "async_method_rails"
+gem "rails_async_methods"
 ```
 
 And then execute:
@@ -18,7 +18,7 @@ $ bundle
 
 Or install it yourself as:
 ```bash
-$ gem install async_method_rails
+$ gem install rails_async_methods
 ```
 
 ## Contributing

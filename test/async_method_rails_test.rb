@@ -1,15 +1,15 @@
 require "test_helper"
 require 'pry'
-class AsyncMethodRailsTest < ActiveSupport::TestCase
+class RailsAsyncMethodsTest < ActiveSupport::TestCase
   include DelayedJobRunner
 
   test "it has a version number" do
-    assert AsyncMethodRails::VERSION
+    assert RailsAsyncMethods::VERSION
   end
 
   test "it generates the abstract job" do
-    system "cd test/dummy && rails generate async_method_rails"
-    assert File.exist? "test/dummy/app/jobs/async_method_rails/abstract_job.rb"
+    system "cd test/dummy && rails generate rails_async_methods"
+    assert File.exist? "test/dummy/app/jobs/rails_async_methods/abstract_job.rb"
   end
 
   test "it generates a delayed job when an async method is called" do
@@ -24,7 +24,7 @@ class AsyncMethodRailsTest < ActiveSupport::TestCase
 
   test "it does not run on an unsaved record" do
     ex = AsyncExample.new
-    assert_raises(AsyncMethodRails::AsyncMethod::NotPersistedError) { ex.async_set_testfield_nil }
+    assert_raises(RailsAsyncMethods::AsyncMethod::NotPersistedError) { ex.async_set_testfield_nil }
   end
 
   test "it does not accept a block" do

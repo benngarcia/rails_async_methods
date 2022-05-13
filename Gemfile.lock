@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    async_method_rails (0.1.0)
+    rails_async_methods (0.1.0)
       activesupport
       rails (>= 7.0.2.4)
 
@@ -172,12 +172,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  async_method_rails!
   daemons
   delayed_job_active_record
   minitest
   pg
   pry
+  rails_async_methods!
   sidekiq
 
 BUNDLED WITH

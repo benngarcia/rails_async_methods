@@ -1,8 +1,7 @@
-require 'async_method_rails/parameter_parser'
-require 'async_method_rails/active_job_options_parser'
-require 'pry'
+require 'rails_async_methods/parameter_parser'
+require 'rails_async_methods/active_job_options_parser'
 
-module AsyncMethodRails
+module RailsAsyncMethods
   module AsyncMethod
     extend ActiveSupport::Concern
 
@@ -15,8 +14,8 @@ module AsyncMethodRails
         raise NoMethodError unless method_defined?(method_name)
         unbound_method = instance_method(method_name.to_sym)
 
-        parsed_method_arguments = AsyncMethodRails::ParameterParser.new(unbound_method.parameters)
-        active_job_arguments = AsyncMethodRails::ActiveJobOptionsParser.new(opts)
+        parsed_method_arguments = RailsAsyncMethods::ParameterParser.new(unbound_method.parameters)
+        active_job_arguments = RailsAsyncMethods::ActiveJobOptionsParser.new(opts)
 
         if parsed_method_arguments.empty?
           define_method "#{active_job_arguments.prefix.concat(method_name.to_s)}" do

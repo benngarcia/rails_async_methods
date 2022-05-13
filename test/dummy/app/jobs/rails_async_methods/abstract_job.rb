@@ -1,4 +1,4 @@
-class AsyncMethodRails::AbstractJob < ApplicationJob
+class RailsAsyncMethods::AbstractJob < ApplicationJob
   queue_as :default
 
   def perform(receiver, method, *args, **kwargs)

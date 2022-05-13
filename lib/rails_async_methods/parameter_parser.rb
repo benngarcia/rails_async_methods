@@ -1,4 +1,4 @@
-module AsyncMethodRails
+module RailsAsyncMethods
   class ParameterParser
     REQ_POS_DELIMETER = ','.freeze
     OPT_POS_DELIMETER = '=nil,'.freeze

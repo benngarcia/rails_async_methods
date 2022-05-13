@@ -5,7 +5,7 @@ require "rails/all"
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
-require "async_method_rails"
+require "rails_async_methods"
 
 module Dummy
   class Application < Rails::Application

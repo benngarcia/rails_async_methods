@@ -1,8 +1,8 @@
-require_relative "lib/async_method_rails/version"
+require_relative "lib/rails_async_methods/version"
 
 Gem::Specification.new do |spec|
-  spec.name        = "async_method_rails"
-  spec.version     = AsyncMethodRails::VERSION
+  spec.name        = "rails_async_methods"
+  spec.version     = RailsAsyncMethods::VERSION
   spec.authors     = ["benngarcia"]
   spec.email       = ["beng4606@gmail.com"]
   spec.homepage      = "https://github.com/benngarcia/rails_async_methods"
