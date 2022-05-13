@@ -1,5 +1,5 @@
 # RailsAsyncMethods
-Rails Async Methods is an opinionated gem meant to remove boilerplate while creating asynchronous rails jobs. It provides a declarative interface for converting any model method into an asychronous method by providing an abstracted wrapper around rails ActiveJob API.
+Rails Async Methods is an opinionated gem meant to remove boilerplate while creating Rails ActiveJobs. It provides a declarative interface for converting any model method into an asychronous method by providing an abstracted wrapper around rails ActiveJob API.
 
 ## Usage
 ```ruby
@@ -19,7 +19,7 @@ def example_method_with_args(a:, b:)
 end
 async :example_method_with_args
 ```
-the ```async_example_method_with_args``` method will have a signature that matches the original method. This makes testing and debugging during development faster, as both sync and async method calls will fail when called instead of silently failing as an active job.
+the ```async_example_method_with_args``` method will have a signature that matches the original method. This makes testing and debugging during development faster, as both sync and async method calls will fail when called with improper arguments instead of silently failing as an active job.
 
 ### Options
 
@@ -47,6 +47,7 @@ async :example_method, queue: :fast, wait_until: 1.week.from_now, wait: 1.week, 
 ```
 
 ## Installation
+First, make sure your [ActiveJob is setup with the backend of your choice](https://edgeguides.rubyonrails.org/active_job_basics.html#job-execution). 
 Add this line to your application's Gemfile:
 
 ```ruby
