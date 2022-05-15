@@ -1,4 +1,5 @@
 require "test_helper"
+require 'pry'
 class RailsAsyncMethodsTest < ActiveSupport::TestCase
   include DelayedJobRunner
 
@@ -79,6 +80,49 @@ class RailsAsyncMethodsTest < ActiveSupport::TestCase
 
     dj = ex.async_method_with_custom_job_and_args
     assert_equal dj.class, ExampleCustomAsyncJob
-    assert_equal dj.queue_name, "custom"
+    assert_equal dj.queue_name, 'custom'
   end
+
+  test 'it can utilize the async core ext to return an async wrapper' do
+    ex = AsyncExample.create!(testfield: 'not nil')
+    assert_difference 'Delayed::Job.count', 1 do
+      async(ex).set_testfield_nil
+    end
+    run_last
+
+    assert_nil ex.reload.testfield
+  end
+
+  test 'it can also be called as a chainable method' do
+    ex = AsyncExample.create!(testfield: 'not nil')
+    assert_difference 'Delayed::Job.count', 1 do
+      ex.to_active_job.set_testfield_nil
+    end
+    run_last
+
+    assert_nil ex.reload.testfield
+  end
+
+  test 'to_active_job can take options' do
+    ex = AsyncExample.create!(testfield: 'not nil')
+    dj = ex.to_active_job(queue: :fast, job: ExampleCustomAsyncJob).set_testfield_nil
+
+    assert_equal dj.queue_name, 'fast'
+    assert_equal dj.class, ExampleCustomAsyncJob
+    run_last
+    assert_nil ex.reload.testfield
+  end
+
+  test 'async global helper can take options' do
+    ex = AsyncExample.create! testfield: 'not nil'
+    dj = async(ex, queue: :fast, job: ExampleCustomAsyncJob, priority: 10, wait: 1.week).set_testfield_nil
+
+    assert_equal dj.queue_name, 'fast'
+    assert_equal dj.class, ExampleCustomAsyncJob
+    assert_not_nil ex.reload.testfield
+    assert_in_epsilon dj.scheduled_at, 1.week.from_now.to_i, 60
+    run_last
+    assert_nil ex.reload.testfield
+  end
+
 end
