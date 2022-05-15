@@ -58,7 +58,9 @@ user_instance.asynchronous_example_method
 - job: use a custom job other than the generated ```RailsAsyncMethods::AbstractJob``` - see section on Custom Jobs below i.e.
 ```ruby
 async :example_method, job: CustomExampleMethodJob # defined in model
-async(@resource, job: CustomExampleMethodJob).example_method #callable anywhere
+async(@resource, job: CustomExampleMethodJob).example_method # callable anywhere
+@resource.to_active_job(job: CustomExampleMethodJob).example_method
+
 ```
 
 - ActiveJob configurations
