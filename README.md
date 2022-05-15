@@ -2,6 +2,7 @@
 Rails Async Methods is an opinionated gem meant to remove boilerplate while creating Rails ActiveJobs. It provides a declarative interface for converting any model method into an asychronous method by providing an abstracted wrapper around rails ActiveJob API.
 
 ## Usage
+### Model Declaration
 ```ruby
 class User
   def example_method
@@ -21,6 +22,28 @@ async :example_method_with_args
 ```
 the ```async_example_method_with_args``` method will have a signature that matches the original method. This makes testing and debugging during development faster, as both sync and async method calls will fail when called with improper arguments instead of silently failing as an active job.
 
+### Object Wrapper
+Alternatively, if you don't to declare methods as async in your model, you can utilize the async object wrapper made available globally to all objects.
+```ruby
+class ResourceController < Application Controller
+    def create
+        async(@resource).any_method_available_to_resource
+    end
+end
+```
+If you don't want to wrap objects in a utility method, you can also use the expressive type converter.
+### Type Converter
+```ruby
+class ResourceService
+    def run
+        @resource.to_active_job.any_method_available_to_resource
+    end
+end
+```
+
+Note: Under the hood, the object wrapper just makes a call ```to_active_job```, so these objects work the same. 
+
+It is recommended that you default to the model declaration syntax.
 ### Options
 
 You can pass the following options to your async declaration.
@@ -34,7 +57,8 @@ user_instance.asynchronous_example_method
 
 - job: use a custom job other than the generated ```RailsAsyncMethods::AbstractJob``` - see section on Custom Jobs below i.e.
 ```ruby
-async :example_method, job: CustomExampleMethodJob
+async :example_method, job: CustomExampleMethodJob # defined in model
+async(@resource, job: CustomExampleMethodJob).example_method #callable anywhere
 ```
 
 - ActiveJob configurations
@@ -43,7 +67,12 @@ async :example_method, job: CustomExampleMethodJob
     - wait: give an amount of time for the job to wait until executing
     - priority: delayed job priority
 ```ruby
-async :example_method, queue: :fast, wait_until: 1.week.from_now, wait: 1.week, priority: 1
+async :example_method, 
+      queue: :fast, 
+      wait_until: 1.week.from_now, 
+      wait: 1.week, 
+      priority: 1 # defined in model
+async(@resource, queue: :fast, wait_until: 1.week.from_now, wait: 1.week, priority: 1).example_method # same as calling @resource.async_example_method when above is defined in model
 ```
 
 ## Installation

@@ -1,14 +1,7 @@
-class ExampleCustomAsyncJob < ApplicationJob
+class ExampleCustomAsyncJob < RailsAsyncMethods::AbstractJob
   queue_as :default
 
-  around_perform :example
-
-  def perform(receiver, method, *args, **kwargs)
-    receiver.send(method, *args, **kwargs)
-  end
-
-  private
-
+  before_perform :example
   def example
     true
   end
