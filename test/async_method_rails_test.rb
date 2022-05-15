@@ -125,4 +125,12 @@ class RailsAsyncMethodsTest < ActiveSupport::TestCase
     assert_nil ex.reload.testfield
   end
 
+  test 'async global helper method can use args' do
+    ex = AsyncExample.create!
+    async(ex).method_with_args_spread_args_and_kwargs(1, 2, 3, 4)
+    run_last
+
+    assert_equal ex.reload.testfield, '[2, 3, 4]'
+  end
+
 end
