@@ -25,7 +25,7 @@ the ```async_example_method_with_args``` method will have a signature that match
 ### Object Wrapper
 Alternatively, if you don't to declare methods as async in your model, you can utilize the async object wrapper made available globally to all objects.
 ```ruby
-class ResourceController < Application Controller
+class ResourceController < ApplicationController
     def create
         async(@resource).any_method_available_to_resource
     end
