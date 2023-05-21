@@ -57,7 +57,7 @@ class RailsAsyncMethodsTest < ActiveSupport::TestCase
     ex = AsyncExample.create!
     dj = ex.async_method_with_diff_wait_time_and_priority
 
-    assert_in_epsilon dj.scheduled_at, 1.week.from_now.to_i, 60
+    assert_in_delta dj.scheduled_at, 1.week.from_now.to_i, 60
     assert_equal dj.priority, -10
   end
 
@@ -120,7 +120,7 @@ class RailsAsyncMethodsTest < ActiveSupport::TestCase
     assert_equal dj.queue_name, 'fast'
     assert_equal dj.class, ExampleCustomAsyncJob
     assert_not_nil ex.reload.testfield
-    assert_in_epsilon dj.scheduled_at, 1.week.from_now.to_i, 60
+    assert_in_delta dj.scheduled_at, 1.week.from_now.to_i, 60
     run_last
     assert_nil ex.reload.testfield
   end
@@ -132,5 +132,4 @@ class RailsAsyncMethodsTest < ActiveSupport::TestCase
 
     assert_equal ex.reload.testfield, '[2, 3, 4]'
   end
-
 end
