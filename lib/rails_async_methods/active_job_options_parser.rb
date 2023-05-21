@@ -9,7 +9,7 @@ module RailsAsyncMethods
       @prefix = method_prefix(opts[:prefix])
       @queue = opts[:queue]
       @wait_until = opts[:wait_until].to_f if opts[:wait_until]
-      @wait = opts[:wait].seconds.from_now.to_f if opts[:wait]
+      @wait = opts[:wait].seconds.to_f if opts[:wait]
       @priority = opts[:priority].to_i if opts[:priority]
       @job = get_job_obj(opts[:job])
     end

@@ -4,7 +4,6 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 # Specify your gem's dependencies in rails_async_methods.gemspec.
 gemspec
 
-gem "pg"
 gem 'delayed_job_active_record'
 gem 'daemons'
 
