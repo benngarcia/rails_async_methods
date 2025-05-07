@@ -18,7 +18,7 @@ module RailsAsyncMethods
         active_job_arguments = RailsAsyncMethods::ActiveJobOptionsParser.new(opts)
 
         if parsed_method_arguments.empty?
-          define_method "#{active_job_arguments.prefix.concat(method_name.to_s)}" do
+          define_method "#{active_job_arguments.prefix}#{method_name.to_s}" do
             raise NotPersistedError, 'Instance must be persisted to run asynchronously' unless persisted?
             raise TypeError, 'Cannot pass a block to an asynchronous method' if block_given?
 
