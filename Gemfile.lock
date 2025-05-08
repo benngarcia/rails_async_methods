@@ -84,7 +84,7 @@ GEM
     delayed_job_active_record (4.1.7)
       activerecord (>= 3.0, < 8.0)
       delayed_job (>= 3.0, < 5)
-    digest (3.1.0)
+    digest (3.2.0)
     erubi (1.10.0)
     globalid (1.0.0)
       activesupport (>= 5.0)
@@ -100,7 +100,7 @@ GEM
     mini_mime (1.1.2)
     mini_portile2 (2.8.0)
     minitest (5.15.0)
-    net-imap (0.2.3)
+    net-imap (0.2.5)
       digest
       net-protocol
       strscan
@@ -108,7 +108,7 @@ GEM
       digest
       net-protocol
       timeout
-    net-protocol (0.1.3)
+    net-protocol (0.2.2)
       timeout
     net-smtp (0.3.1)
       digest
@@ -158,9 +158,9 @@ GEM
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
-    strscan (3.0.3)
+    strscan (3.1.5)
     thor (1.2.1)
-    timeout (0.2.0)
+    timeout (0.4.3)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     websocket-driver (0.7.5)
