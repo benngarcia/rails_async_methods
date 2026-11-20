@@ -1,145 +1,82 @@
-# RailsAsyncMethods
-Rails Async Methods is an opinionated gem meant to remove boilerplate while creating Rails ActiveJobs. It provides a declarative interface for converting any model method into an asychronous method by providing an abstracted wrapper around rails ActiveJob API.
+# RailsAsyncMethods (`rewrite` branch — Sunset Reference Implementation)
+
+> **Deprecated / Sunset:** `rails_async_methods` is no longer actively maintained.
+> This `rewrite` branch is a security-hardened, zero-`eval` from-scratch implementation kept as a clean reference if you want to vendor or fork the pattern in your own Rails 7.2+ / 8.0+ application.
+
+## What Changed vs. `0.2.x`
+
+- **Zero `eval` / zero parameter shadowing RCE**: replaces `module_eval` + `binding.local_variable_get` with a pure Ruby 3.3+ `Signature` validator over `Method#parameters` that preserves default arguments intact.
+- **Defense-in-depth allowlist**: both enqueue (`Proxy`) and worker execution (`Dispatcher#perform`) verify that the target class opted in and explicitly declared the method async before calling `public_send`.
+- **Zero global `Object` pollution**: drops `Object#async`, `Object#to_active_job`, and automatic `ActiveRecord::Base` patching in favor of opt-in `include RailsAsyncMethods` + a `BasicObject` proxy.
+- **Transaction-safe & Zeitwerk-safe**: enables ActiveJob's `enqueue_after_transaction_commit` by default, requires `Proc` for declaration-level `wait_until:`, and stores job class names as strings resolved at enqueue time.
+- **Class methods, stateless services, and batching**: supports `async_class_method` via a dedicated `ClassTargetSerializer`, custom `ActiveJob::Base` / `ApplicationJob` subclasses via `include RailsAsyncMethods::Dispatcher`, and `ActiveJob.perform_all_later` via `async_job`.
 
 ## Usage
-### Model Declaration
+
 ```ruby
-class User
-  def example_method
-    # logic...
+class ApplicationRecord < ActiveRecord::Base
+  primary_abstract_class
+  include RailsAsyncMethods
+end
+
+class User < ApplicationRecord
+  async_method :send_welcome_email, queue: :mailers
+  def send_welcome_email(template: :default)
+    UserMailer.welcome(self, template: template).deliver_now
   end
-  async :example_method
-  
-  # or...
-  
-  async def example_method2
-    # logic...
+
+  async_method def sync_stripe_customer
+    Stripe::CustomerSync.call(self)
+  end
+
+  async_class_method :prune_inactive,
+    queue: :maintenance,
+    wait_until: -> { Time.current.tomorrow.change(hour: 3) }
+  def self.prune_inactive(older_than:)
+    where(last_seen_at: ...older_than).delete_all
   end
 end
-```
-This will give you access to ```user_instance.async_example_method```, which when called will use ActiveJob's API to create an ActiveJob with your backend of choice and call the example_method when the job is ran.
 
-One important distinction is that for a method call like
-```ruby
-def example_method_with_args(a:, b:)
-  #logic
+# Stateless service with custom ApplicationJob (retry_on, Solid Queue limits_concurrency, etc.)
+class Billing::ChargeInvoice
+  include RailsAsyncMethods
+
+  async_class_method :call, job: "BillingDispatchJob"
+  def self.call(invoice)
+    # ...
+  end
 end
-async :example_method_with_args
-```
-the ```async_example_method_with_args``` method will have a signature that matches the original method. This makes testing and debugging during development faster, as both sync and async method calls will fail when called with improper arguments instead of silently failing as an active job.
 
-### Object Wrapper
-Alternatively, if you don't want to declare methods as async in your model, you can utilize the async object wrapper made available globally to all objects.
+class BillingDispatchJob < ApplicationJob
+  include RailsAsyncMethods::Dispatcher
+  retry_on Stripe::RateLimitError, wait: :polynomially_longer, attempts: 5
+end
+
+# Call sites
+user.async.send_welcome_email
+user.async(wait: 5.minutes).send_welcome_email(template: :vip)
+User.async.prune_inactive(older_than: 90.days.ago)
+Billing::ChargeInvoice.async.call(invoice)
+
+# Batch enqueueing (Rails 7.1+)
+ActiveJob.perform_all_later(users.map { |u| u.async_job.send_welcome_email })
+```
+
+### Testing
+
 ```ruby
-class ResourceController < ApplicationController
-    def create
-        async(@resource).any_method_available_to_resource
+class UserTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+  include RailsAsyncMethods::TestHelper
+
+  test "enqueues welcome email" do
+    assert_async_method_enqueued(@user, :send_welcome_email, kwargs: { template: :vip }, queue: "mailers") do
+      @user.async.send_welcome_email(template: :vip)
     end
-end
-```
-If you don't want to wrap objects in a utility method, you can also use the expressive type converter.
-### Type Converter
-```ruby
-class ResourceService
-    def run
-        @resource.to_active_job.any_method_available_to_resource
-    end
-end
-```
-
-Note: Under the hood, the object wrapper just makes a call ```to_active_job```, so these objects work the same. 
-
-It is recommended that you default to the model declaration syntax.
-### Options
-
-You can pass the following options to your async declaration.
-
-- prefix: specifies a prefix other than ```async_```, i.e.
-```ruby
-async :example_method, prefix: :asynchrounous_
-
-user_instance.asynchronous_example_method
-```
-
-- job: use a custom job other than the generated ```RailsAsyncMethods::AbstractJob``` - see section on Custom Jobs below i.e.
-```ruby
-async :example_method, job: CustomExampleMethodJob # defined in model
-async(@resource, job: CustomExampleMethodJob).example_method # callable anywhere
-@resource.to_active_job(job: CustomExampleMethodJob).example_method
-
-```
-
-- ActiveJob configurations
-    - queue: specify a custom queue
-    - wait_until: specify a date for the job to run at
-    - wait: give an amount of time for the job to wait until executing
-    - priority: delayed job priority
-```ruby
-async :example_method, 
-      queue: :fast, 
-      wait_until: 1.week.from_now, 
-      wait: 1.week, 
-      priority: 1 # defined in model
-async(@resource, queue: :fast, wait_until: 1.week.from_now, wait: 1.week, priority: 1).example_method # same as calling @resource.async_example_method when above is defined in model
-```
-
-## Installation
-First, make sure your [ActiveJob is setup with the backend of your choice](https://edgeguides.rubyonrails.org/active_job_basics.html#job-execution). 
-Add this line to your application's Gemfile:
-
-```ruby
-gem "rails_async_methods"
-```
-
-And then execute:
-```bash
-$ bundle
-```
-
-Then, run the generator
-```bash
-$ rails generate rails_async_methods
-```
-
-Or install it yourself as:
-```bash
-$ gem install rails_async_methods
-```
-
-## Extras
-
-### Custom Jobs
-While you can implement any custom job, and have it implement the perform method with this signature.
-```ruby
-def perform(receiver, method, *args, **kwargs)
-  receiver.send(method, *args, **kwargs)
-end
-```
-
-I would instead recommend inherting from the generated ActiveJob, i.e.
-
-```ruby
-class RailsAsyncMethods::CustomJob < RailsAsyncMethods::AbstractJob
-  around_perform :do_special_thing
-
-  private
-  def do_special_thing
-    # Special Things
   end
 end
 ```
-
-## Contributing
-Contributions Welcome! Please create an issue first, and then fork and create a PR. 
 
 ## License
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-## Why?
-You don't need to move 1-2 LOC out of your model. If it's larger, use a service object. Either way, your controllers and requests should be interacting with resources typically. They should not need to know about Jobs/Service/Other Design Pattern implementations of interacting with your resources. In this line of thinking, most calls that interact with a resource should be called on that resource's model. Thus, Job's that wrap 1-2 LOC or a call to a Service object are unneccesary boilerplate.
-
-So, either write your minimal logic in the model, or use whatever refactoring you deem necessary, but leave the model as the entry point for interacting with the resource. Then, declare that method as Async when you need fit.
-
-I told you this gem is opinionated.
-
-Also, the existing alternatives override the method's name, leading to confusion as what appears to be synchronous was made asyncronous. 
+Available as open source under the [MIT License](MIT-LICENSE).

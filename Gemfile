@@ -1,11 +1,13 @@
-source "https://rubygems.org"
-git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+# frozen_string_literal: true
 
-# Specify your gem's dependencies in rails_async_methods.gemspec.
+source "https://rubygems.org"
+
 gemspec
 
-gem 'delayed_job_active_record'
-gem 'daemons'
-
-# Start debugger with binding.b [https://github.com/ruby/debug]
-# gem "debug", ">= 1.0.0"
+group :development, :test do
+  gem "activerecord", ">= 7.2", "< 9.0"
+  gem "minitest", ">= 5.20"
+  gem "rake", ">= 13.0"
+  gem "sqlite3", ">= 2.0"
+  gem "zeitwerk", ">= 2.6"
+end
