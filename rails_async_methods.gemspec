@@ -6,9 +6,21 @@ Gem::Specification.new do |spec|
   spec.authors     = ["benngarcia"]
   spec.email       = ["beng4606@gmail.com"]
   spec.homepage    = "https://github.com/benngarcia/rails_async_methods"
-  spec.summary     = "Quickly, create async callers and receivers for your rails methods, because y'know DRY."
-  spec.description = "Utilizes the ActiveJob api to provide async callers and receivers without duplicating code."
+  spec.summary     = "[DEPRECATED] Quickly create async callers and receivers for your Rails methods."
+  spec.description = "DEPRECATED: rails_async_methods is sunset. See https://github.com/benngarcia/rails_async_methods for details and the security-hardened rewrite branch."
   spec.license     = "MIT"
+
+  spec.post_install_message = <<~MSG
+    ================================================================================
+    [DEPRECATED] rails_async_methods is sunset and no longer actively maintained.
+
+    Releases <= 0.2.x contain known security and correctness issues (including
+    module_eval parameter shadowing and un-allowlisted job dispatch).
+
+    - Production apps: use standard ActiveJob / ApplicationJob classes directly.
+    - Reference fix: https://github.com/benngarcia/rails_async_methods/tree/rewrite
+    ================================================================================
+  MSG
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "https://github.com/benngarcia/rails_async_methods/blob/master/CHANGELOG.md"

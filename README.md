@@ -1,4 +1,12 @@
 # RailsAsyncMethods
+
+> **Deprecated / Sunset:** `rails_async_methods` is deprecated and no longer actively maintained.
+>
+> **Security & correctness notice (`0.2.x`):** Releases `<= 0.2.x` have known security and correctness defects, including `module_eval` parameter-name shadowing (`method_name` / `argument`), an un-allowlisted `AbstractJob#perform` `public_send` dispatcher, silent default-argument clobbering (`nil`), and ActiveRecord transaction-commit race conditions.
+>
+> - For production Rails apps, use standard `ApplicationJob` classes directly (with Solid Queue, Sidekiq, or GoodJob).
+> - If you want to vendor or fork a security-hardened, zero-`eval` implementation of this pattern for Ruby 3.3+ and Rails 7.2/8.x, see the [`rewrite` branch](https://github.com/benngarcia/rails_async_methods/tree/rewrite).
+
 Rails Async Methods is an opinionated gem meant to remove boilerplate while creating Rails ActiveJobs. It provides a declarative interface for converting any model method into an asychronous method by providing an abstracted wrapper around rails ActiveJob API.
 
 ## Usage
